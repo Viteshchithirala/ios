@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {ActivityIndicator, View , Platform} from 'react-native';
+import {ActivityIndicator, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LandingPage from '../screens/LandingPage/LandingPage'; // Replace with actual path
