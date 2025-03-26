@@ -1,6 +1,6 @@
 import React from 'react';
 import { BaseToast, ToastConfig } from 'react-native-toast-message';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity,Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import { Dimensions } from 'react-native';
 import Toast from 'react-native-toast-message';
