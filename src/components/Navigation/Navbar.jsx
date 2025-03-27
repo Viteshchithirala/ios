@@ -1,88 +1,99 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+
 import { View, Image, StyleSheet, Dimensions, TouchableOpacity, Modal, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useAuth } from "../../context/Authcontext";
-import { useJobAlerts } from '../../viewmodel/Alert/Notificationmodel';
-import ProfileService from '../../services/profile/ProfileService';
-import { useProfilePhoto } from '../../context/ProfilePhotoContext';
-import useGoogleSignIn from '../../services/google/google';
-import Notification from "../../assests/icons/notification";
+import { useAuth } from "@context/Authcontext";
+import { useJobAlerts } from "@viewmodel/Alert/Notificationmodel";
+import { useProfilePhoto } from "@context/ProfilePhotoContext";
+import useGoogleSignIn from "@services/google/google";
+import Notification from "@assests/icons/notification";
+
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
- 
+
 const Navbar = () => {
-    const navigation = useNavigation();
-    const [modalVisible, setModalVisible] = useState(false);
-    // const [photo, setPhoto] = useState('');
-    const { authData, logout, userId, userToken } = useAuth();
-    const { unseenCount, handleMarkAsSeen } = useJobAlerts();
-    const {photo} = useProfilePhoto();
-    const{signOut} = useGoogleSignIn();
+  const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
 
- 
-    const handleProfilePress = () => {
-        setModalVisible(true);
-    };
- 
-const handleLogout = () => { logout(); signOut(); };
-return (
+  const { logout } = useAuth();
+  const { unseenCount } = useJobAlerts();
+  const { photo } = useProfilePhoto();
+  const { signOut } = useGoogleSignIn();
+
+  const handleProfilePress = () => {
+    setModalVisible(true);
+  };
+
+  const handleLogout = () => {
+    logout();
+    signOut();
+  };
+  return (
     <View style={styles.navbar}>
-
-        <View style={styles.logoContainer}>
-            <Image
-                source={require('../../assests/LandingPage/logo.png')}
-                style={styles.logo1Image}
-            />
-        </View>
-        <View style={styles.rightContainer}>
-            {/* Notification Bell */}
-            <View style={styles.notificationContainer}>
-                <TouchableOpacity onPress={() => navigation.navigate("Notification")}>
-                    <Notification width={28} heigth={22} />
-                </TouchableOpacity>
-                {unseenCount > 0 && (
-                    <View style={styles.notificationBadge}>
-                        <Text style={styles.notificationText}>{unseenCount}</Text>
-                    </View>
-                )}
+      <View style={styles.logoContainer}>
+        <Image source={require("../../assests/LandingPage/logo.png")} style={styles.logo1Image} />
+      </View>
+      <View style={styles.rightContainer}>
+        {/* Notification Bell */}
+        <View style={styles.notificationContainer}>
+          <TouchableOpacity onPress={() => navigation.navigate("Notification")}>
+            <Notification width={28} heigth={22} />
+          </TouchableOpacity>
+          {unseenCount > 0 && (
+            <View style={styles.notificationBadge}>
+              <Text style={styles.notificationText}>{unseenCount}</Text>
             </View>
-            <TouchableOpacity onPress={handleProfilePress} style={styles.profilePicContainer}>
-                <Image
-                    source={photo ? { uri: photo } : require('../../assests/profile/profile.png')}
-                    style={styles.profilePic}
-                />
-            </TouchableOpacity>
-            {/* Modal */}
-            <Modal
-                transparent={true}
-                animationType="slide"
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
+          )}
+        </View>
+        <TouchableOpacity onPress={handleProfilePress} style={styles.profilePicContainer}>
+          <Image
+            source={photo ? { uri: photo } : require("../../assests/profile/profile.png")}
+            style={styles.profilePic}
+          />
+        </TouchableOpacity>
+        {/* Modal */}
+        <Modal
+          transparent={true}
+          animationType="slide"
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => setModalVisible(false)}
+          >
+            <View style={styles.modalView5}>
+              <View style={styles.modalCard5}>
                 <TouchableOpacity
-                    style={styles.modalOverlay}
-                    activeOpacity={1}
-                    onPress={() => setModalVisible(false)}
+                  style={styles.customButton}
+                  onPress={() => {
+                    navigation.navigate("Profile");
+                    setModalVisible(false);
+                  }}
                 >
-                    <View style={styles.modalView5}>
-                        <View style={styles.modalCard5}>
-                            <TouchableOpacity style={styles.customButton} onPress={() => {navigation.navigate("Profile");setModalVisible(false);}} >
-                                <Text style={styles.buttonText1}>View Profile</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.customButton1} onPress={() => {navigation.navigate('ChangePassword');setModalVisible(false);}} >
-                                <Text style={styles.buttonText1}>Change password</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={[styles.modalCard6, { marginTop: 10, }]}>
-                            <TouchableOpacity style={styles.modalButton7} onPress={() => { handleLogout(); setModalVisible(false); }} >
-                                <Text style={styles.modalButtonText7}>Logout</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                  <Text style={styles.buttonText1}>View Profile</Text>
                 </TouchableOpacity>
-                </Modal>
+                <TouchableOpacity
+                  style={styles.customButton1}
+                  onPress={() => {
+                    navigation.navigate("ChangePassword");
+                    setModalVisible(false);
+                  }}
+                >
+                  <Text style={styles.buttonText1}>Change password</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={[styles.modalCard6, { marginTop: 10 }]}>
+                <TouchableOpacity style={styles.modalButton7} onPress={handleLogout}>
+                  <Text style={styles.modalButtonText7}>Logout</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-        </View>
-    );
+          </TouchableOpacity>
+        </Modal>
+      </View>
+    </View>
+  );
 };
  
  
