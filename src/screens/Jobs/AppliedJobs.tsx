@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#f6f6f6',
     top: 0,
-    marginBottom: 112,
+    marginBottom: '25%',
   },
   oval: {
     flexDirection: 'row',

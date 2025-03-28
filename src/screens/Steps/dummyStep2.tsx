@@ -315,7 +315,7 @@ const Dummystep2: React.FC = ({ route, navigation }: any) => {
                   placeholderStyle={styles.placeholderText}
                   textStyle={styles.dropdownText}
                   zIndex={3000} // Increase zIndex for better layering
-                  zIndexInverse={1000}
+                  // zIndexInverse={1000}
                   listMode="SCROLLVIEW"
                 />
                 {errors.qualification && (
@@ -341,9 +341,10 @@ const Dummystep2: React.FC = ({ route, navigation }: any) => {
                   dropDownContainerStyle={styles.dropdownContainer}
                   placeholderStyle={styles.placeholderText}
                   textStyle={styles.dropdownText}
-                  zIndex={2500} // Lower than the previous dropdown
-                  zIndexInverse={900}
-                  listMode="SCROLLVIEW"
+                  zIndex={1000} // Lower than the previous dropdown
+                // zIndexInverse={900}
+                listMode="SCROLLVIEW"
+
                 />
                 {errors.specialization && (
                   <Text style={styles.errorText}>{errors.specialization}</Text>
@@ -368,8 +369,8 @@ const Dummystep2: React.FC = ({ route, navigation }: any) => {
                   dropDownContainerStyle={styles.dropdownContainer}
                   placeholderStyle={styles.placeholderText}
                   textStyle={styles.dropdownText}
-                  zIndex={2000}
-                  zIndexInverse={800}
+                  zIndex={900}
+                  // zIndexInverse={800}
                   mode="BADGE"
                   showBadgeDot={false}
                   listMode="SCROLLVIEW"
@@ -401,8 +402,8 @@ const Dummystep2: React.FC = ({ route, navigation }: any) => {
                   dropDownContainerStyle={[styles.dropdownContainer, { maxHeight: 140 }]}
                   placeholderStyle={styles.placeholderText}
                   textStyle={styles.dropdownText}
-                  zIndex={1500}
-                  zIndexInverse={600}
+                  zIndex={800}
+                  // zIndexInverse={600}
                   mode="BADGE"
                   showBadgeDot={false}
                   listMode="SCROLLVIEW"
@@ -410,24 +411,25 @@ const Dummystep2: React.FC = ({ route, navigation }: any) => {
                 {errors.preferredLocation && (
                   <Text style={styles.errorText}>{errors.preferredLocation}</Text>
                 )}
+                <TextInput
+                  placeholder="*Total Experience"
+                  placeholderTextColor="#0D0D0D"
+                  style={styles.input}
+                  value={formData.experience}
+                  keyboardType="numeric" // Ensure only numeric input
+                  onChangeText={text => {
+                    const numericValue = text.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+                    setFormData(prev => ({ ...prev, experience: numericValue }));
+                    if (numericValue) {
+                      setErrors(prev => ({ ...prev, experience: '' })); // Clear error dynamically
+                    }
+                  }}
+                />
+                {errors.experience && (
+                  <Text style={styles.errorText}>{errors.experience}</Text>
+                )}
               </View>
-              <TextInput
-                placeholder="*Total Experience"
-                placeholderTextColor="#0D0D0D"
-                style={styles.input}
-                value={formData.experience}
-                keyboardType="numeric" // Ensure only numeric input
-                onChangeText={text => {
-                  const numericValue = text.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-                  setFormData(prev => ({ ...prev, experience: numericValue }));
-                  if (numericValue) {
-                    setErrors(prev => ({ ...prev, experience: '' })); // Clear error dynamically
-                  }
-                }}
-              />
-              {errors.experience && (
-                <Text style={styles.errorText}>{errors.experience}</Text>
-              )}
+
             </View>
           </ScrollView>
 
@@ -469,7 +471,7 @@ const styles = StyleSheet.create({
     width: 150, // Decreased width
     height: 45,
     marginBottom: 20,
-    alignSelf:'center'
+    alignSelf: 'center'
   },
   container: {
     width: '100%',
@@ -515,6 +517,7 @@ const styles = StyleSheet.create({
     color: 'black',
     backgroundColor: '#F5F5F5',
     fontFamily: 'PlusJakartaSans-Medium',
+    width: '100%',
   },
   backButton: {
     borderWidth: 1,

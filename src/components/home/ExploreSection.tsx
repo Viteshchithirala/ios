@@ -43,7 +43,7 @@ const ExploreSection = () => {
             </View>
             <Text style={styles.cardTitle}>Earn Pre-Screened{"\n"}             Badge</Text>
             <Image
-              source={{ uri: "https://d1sq67t1c2pewz.cloudfront.net/static/media/Taketest.f9b04fc56b4d85d488be.png" }}
+              source={require("../../assests/Images/boyimage.png")}
               style={styles.cardImage}
             />
             <GradientButton
@@ -58,7 +58,7 @@ const ExploreSection = () => {
         <View style={[styles.largeCard, styles.lastCard]}>
           <Text style={styles.cardTitle}>Get Certified on Advanced{"\n"}{"                 "}Technologies</Text>
           <Image
-            source={{ uri: "https://d1sq67t1c2pewz.cloudfront.net/static/media/Certificate.cf13aa641913a67cb502.png" }}
+            source={require("../../assests/Images/Certificate.png")}
             style={styles.cardImage}
           />
           <GradientButton

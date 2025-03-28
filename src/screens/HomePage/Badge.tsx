@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useCallback } from 'react';
 import {
   View,
   Text,
@@ -11,97 +11,40 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native'; // Import the useFocusEffect hook
-import Icon from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import { useProfileViewModel } from '@viewmodel/Profileviewmodel';
 import { useAuth } from '@context/Authcontext';
 import { useBadgeViewModel } from '@viewmodel/BadgeViewModel';
-import {
-  fetchSkillBadges,
-  fetchTestStatus,
-} from '@services/Home/BadgeService';
+import { fetchTestStatus, } from '@services/Home/BadgeService';
 import UserContext from '@context/UserContext';
+import SkillCard from '@components/Cards/SkillCard';
+import StepIndicator from '@components/progessBar/StepProgress';
 
 const { width } = Dimensions.get('window');
-
 const Badge = ({ navigation }: any) => {
-  const {
-    selectedStep,
-    timer,
-    timerState,
-    isButtonDisabled,
-    testName,
-    testStatus,
-    loading,
-    applicantSkillBadges,
-    loadSkillBadges,
-  } = useBadgeViewModel();
+  const { selectedStep, timer, timerState, isButtonDisabled, testName, testStatus, loading, applicantSkillBadges, loadSkillBadges } = useBadgeViewModel();
   const { userId, userToken } = useAuth();
-  const [skillBadges, setSkillBadges] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const { profileData } = useProfileViewModel(userToken, userId);
-  const { skillsRequired = [] } = profileData || {}; // Default to an empty array if skills are missing
+  const { skillsRequired = [] } = profileData || {}; 
   const { personalName } = useContext(UserContext);
-  const testImage: Record<string, any> = {
-    Angular: require('@assests/Images/Test/Angular.png'),
-    Java: require('@assests/Images/Test/Java.png'),
-    C: require('@assests/Images/Test/C.png'),
-    'C++': require('@assests/Images/Test/CPlusPlus.png'),
-    'C Sharp': require('@assests/Images/Test/CSharp.png'),
-    CSS: require('@assests/Images/Test/CSS.png'),
-    Django: require('@assests/Images/Test/Django.png'),
-    '.Net': require('@assests/Images/Test/DotNet.png'),
-    Flask: require('@assests/Images/Test/Flask.png'),
-    Hibernate: require('../../assests/Images/Test/Hibernate.png'),
-    HTML: require('@assests/Images/Test/HTML.png'),
-    JavaScript: require('@assests/Images/Test/JavaScript.png'),
-    JSP: require('@assests/Images/Test/JSP.png'),
-    'Manual Testing': require('@assests/Images/Test/ManualTesting.png'),
-    'Mongo DB': require('@assests/Images/Test/MongoDB.png'),
-    Python: require('@assests/Images/Test/Python.png'),
-    React: require('@assests/Images/Test/React.png'),
-    'Regression Testing': require('@assests/Images/Test/RegressionTesting.png'),
-    Selenium: require('@assests/Images/Test/Selenium.png'),
-    Servlets: require('@assests/Images/Test/Servlets.png'),
-    'Spring Boot': require('@assests/Images/Test/SpringBoot.png'),
-    TypeScript: require('@assests/Images/Test/TypeScript.png'),
-    Spring: require('@assests/Images/Test/Spring.png'),
-    SQL: require('@assests/Images/Test/MySQL.png'),
-    Css: require('@assests/Images/Test/CSS.png'),
-    MySQL: require('@assests/Images/Test/MySQL.png'),
-    Vue: require('@assests/Images/Test/Vue.png'),
-    'SQL-Server': require('@assests/Images/Test/sqlserver.png'),
-  };
 
   useFocusEffect(
     useCallback(() => {
-      let isActive = true; // Prevent updating state if component unmounts
-
+      let isActive = true; 
       const fetchData = async () => {
-        setIsLoading(true);
-        await fetchTestStatus(userId, userToken); // Fetch test status first
-        const badges = await fetchSkillBadges(userId, userToken);
-
-        if (isActive) {
-          setSkillBadges(badges.filter((badge: any) => badge.flag === "added")); // Only set "added" skills
-          setIsLoading(false);
-        }
+        await fetchTestStatus(userId, userToken);  
       };
-
       loadSkillBadges();
       fetchData();
-
       return () => {
-        isActive = false; // Cleanup function to prevent memory leaks
+        isActive = false;
       };
     }, [userId, userToken])
   );
-
-
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#F46F16" style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />
       </View>
     );
   }
@@ -169,70 +112,9 @@ const Badge = ({ navigation }: any) => {
 
                 {/* Progress Bar */}
                 <View style={styles.progressContainer}>
-                  <View
-                    style={[
-                      styles.stepCircle,
-                      {
-                        backgroundColor:
-                          selectedStep >= 1 ? '#219734' : '#BFBFBF',
-                        marginLeft: 15,
-                      },
-                    ]}>
-                    {(testName === 'General Aptitude Test' &&
-                      testStatus === 'P') ||
-                      selectedStep > 1 ? (
-                      <Icon name="check" size={16} color="white" />
-                    ) : (
-                      <Text style={[styles.stepText, { color: '#fff' }]}>1</Text>
-                    )}
-                  </View>
-                  <View
-                    style={[
-                      styles.stepLine,
-                      {
-                        backgroundColor:
-                          selectedStep >= 2 ? '#219734' : '#BFBFBF',
-                      },
-                    ]}
-                  />
-                  <View
-                    style={[
-                      styles.stepCircle,
-                      {
-                        backgroundColor:
-                          selectedStep >= 2 ? '#219734' : '#BFBFBF',
-                      },
-                    ]}>
-                    {selectedStep >= 2 ? (
-                      <Text style={[styles.stepText, { color: '#fff' }]}>2</Text>
-                    ) : (
-                      <Text style={styles.stepText}>2</Text>
-                    )}
-                  </View>
-                  <View
-                    style={[
-                      styles.stepLine,
-                      {
-                        backgroundColor:
-                          selectedStep >= 3 ? '#219734' : '#BFBFBF',
-                      },
-                    ]}
-                  />
-                  <View
-                    style={[
-                      styles.stepCircle,
-                      {
-                        backgroundColor:
-                          selectedStep >= 3 ? '#219734' : '#BFBFBF',
-                        marginRight: 15,
-                      },
-                    ]}>
-                    <Icon
-                      name="flag"
-                      size={12}
-                      style={{ color: selectedStep >= 3 ? 'white' : '#6D6969' }}
-                    />
-                  </View>
+                <StepIndicator step={1} selectedStep={selectedStep} testName={testName} testStatus={testStatus} />
+                  <StepIndicator step={2} selectedStep={selectedStep} testName={testName} testStatus={testStatus} />
+                  <StepIndicator step={3} selectedStep={selectedStep} testName={testName} testStatus={testStatus} isLast />
                 </View>
                 {/* Other Sections */}
                 <View
@@ -304,8 +186,6 @@ const Badge = ({ navigation }: any) => {
                       />
                     </View>
                   </View>
-
-                  {/* TouchableOpacity */}
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <LinearGradient
                       colors={
@@ -322,13 +202,12 @@ const Badge = ({ navigation }: any) => {
                         styles.disabledButton, // Apply disabled styles only for non-technical t
                       ]}>
                       <TouchableOpacity
-                        // style={[styles.progressButton, isButtonDisabled && styles.disabledButton]}
                         style={[
                           styles.progressButton,
                           isButtonDisabled &&
                           testName !== 'Technical Test' &&
-                          styles.disabledButton, // Apply disabled button styles
-                          // Apply resizing only when it's not a Technical Test and the timer is present
+                          styles.disabledButton, 
+                      
                           testName === 'General Aptitude Test' &&
                           testStatus === 'F' &&
                           timer &&
@@ -338,9 +217,9 @@ const Badge = ({ navigation }: any) => {
                           if (!isButtonDisabled && selectedStep < 3) {
                             navigation.navigate('TestInstruction');
                           }
-                          // If button is disabled (timer running), do nothing
+                  
                         }}
-                        disabled={isButtonDisabled} // Disable the button when the timer is running
+                        disabled={isButtonDisabled} 
                       >
                         <Text style={styles.progressButtonText}>
                           {testStatus === 'F' && timer
@@ -398,156 +277,38 @@ const Badge = ({ navigation }: any) => {
           <View style={styles.textContainer}>
             <Text style={styles.text}>Skill Badges</Text>
           </View>
-
-          {/* Horizontal ScrollView for Cards */}
           <ScrollView
             horizontal={true}
             showsHorizontalScrollIndicator={true}
             contentContainerStyle={styles.horizontalScrollContent}>
-            {[
-              // Step 1: Display "Take Test" skills first
-              ...skillsRequired.map((skill: any, index: any) => (
-                <View key={`skill-${index}`} style={styles.card}>
-                  <Image
-                    source={
-                      testImage[skill.skillName] ||
-                      require('@assests/Images/Test/NotFound.png')
-                    }
-                    style={styles.cardImage}
-                  />
-                  <Text style={styles.cardTitle}>
-                    {skill.skillName || 'Skill Name Not Available'}
-                  </Text>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() =>
-                      navigation.navigate('TestInstruction', {
-                        skillName: skill.skillName,
-                        testType: 'SkillBadge',
-                      })
-                    }>
-                    <Text style={styles.buttonText}>Take Test</Text>
-                    <Icon
-                      name="external-link"
-                      size={20}
-                      color="white"
-                      style={{ marginRight: 15 }}
-                    />
-                  </TouchableOpacity>
-                </View>
-              )),
-
-              // Step 2: Display "Passed" skill badges
-              ...applicantSkillBadges
-                .filter((badge: any) => badge.status === 'PASSED')
-                .map((badge: any) => (
-                  <View key={`badge-${badge.id}`} style={styles.card}>
-                    <View style={styles.statusContainer}>
-                      <Text style={[styles.badgeStatus, styles.passed]}>
-                        Passed
-                      </Text>
-                    </View>
-                    <Image
-                      source={
-                        testImage[badge.skillBadge.name] ||
-                        require('@assests/Images/Test/NotFound.png')
-                      }
-                      style={styles.cardImage}
-                    />
-                    <Text style={styles.cardTitle}>
-                      {badge.skillBadge.name}
-                    </Text>
-                    <TouchableOpacity
-                      style={[styles.button, styles.verifiedButton]}
-                      disabled>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}>
-                        <Icon
-                          name="check"
-                          size={19}
-                          color="white"
-                          style={{ marginRight: 5 }}
-                        />
-                        <Text style={[styles.verifiedText, { lineHeight: 19 }]}>
-                          Verified
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                )),
-
-              // Step 3: Display "Failed" skill badges
-              ...applicantSkillBadges
-                .filter((badge: any) => badge.status === 'FAILED')
-                .map((badge: any) => {
-                  const timer = timerState[badge.skillBadge.id];
-                  return (
-                    <View key={`failed-badge-${badge.id}`} style={styles.card}>
-                      <View style={styles.statusContainer}>
-                        <Text style={[styles.badgeStatus, styles.failed]}>
-                          Failed
-                        </Text>
-                      </View>
-                      <Image
-                        source={
-                          testImage[badge.skillBadge.name] ||
-                          require('@assests/Images/Test/NotFound.png')
-                        }
-                        style={styles.cardImage}
-                      />
-                      <Text style={styles.cardTitle}>
-                        {badge.skillBadge.name}
-                      </Text>
-                      {timer ? (
-                        <LinearGradient
-                          colors={['#d3d3d3', '#d3d3d3']}
-                          style={[
-                            styles.gradientBackground,
-                            styles.timerContain,
-                          ]}>
-                          <View
-                            style={{
-                              flex: 1,
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                            }}>
-                            <Text style={styles.timerText1}>
-                              Retake test in
-                            </Text>
-                            <Text style={styles.timerText1}>
-                              {timer.days}d {timer.hours}h {timer.minutes}m
-                            </Text>
-                          </View>
-                        </LinearGradient>
-                      ) : (
-                        <View style={styles.cardFooter}>
-                          <TouchableOpacity
-                            style={styles.button}
-                            onPress={() =>
-                              navigation.navigate('TestInstruction', {
-                                skillName: badge.skillBadge.name,
-                                testType: 'SkillBadge',
-                                timer: true,
-                              })
-                            }>
-                            <Text style={styles.buttonText}>Retake Test</Text>
-                            <Icon
-                              name="external-link"
-                              size={20}
-                              color="white"
-                              style={{ marginRight: 10 }}
-                            />
-                          </TouchableOpacity>
-                        </View>
-                      )}
-                    </View>
-                  );
-                }),
-            ]}
+            {skillsRequired.map((skill: any, index: any) => (
+              <SkillCard
+                key={`skill-${index}`}
+                skillName={skill.skillName}
+                status={null}
+                onPress={() => navigation.navigate('TestInstruction', { skillName: skill.skillName, testType: 'SkillBadge' })}
+              />
+            ))}
+            {applicantSkillBadges.filter(badge => badge.status === 'PASSED').map(badge => (
+              <SkillCard
+                key={`badge-${badge.id}`}
+                skillName={badge.skillBadge.name}
+                status="PASSED"
+                onPress={() => { }}
+              />
+            ))}
+            {applicantSkillBadges.filter(badge => badge.status === 'FAILED').map(badge => {
+              const timer = timerState[badge.skillBadge.id];
+              return (
+                <SkillCard
+                  key={`failed-badge-${badge.id}`}
+                  skillName={badge.skillBadge.name}
+                  status="FAILED"
+                  timer={timer}
+                  onPress={() => navigation.navigate('TestInstruction', { skillName: badge.skillBadge.name, testType: 'SkillBadge', timer: true })}
+                />
+              );
+            })}
           </ScrollView>
         </View>
       </ScrollView>
@@ -657,31 +418,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  card: {
-    flex: 1,
-    width: 190,
-    height: 210,
-    marginRight: 16,
-    borderRadius: 10,
-    backgroundColor: '#FFFFFF',
-
-    alignItems: 'center',
-  },
-  cardImage: {
-    width: 110,
-    height: 100,
-    padding: 15,
-    resizeMode: 'contain',
-    borderRadius: 10,
-    marginTop: 30
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontFamily: 'PlusJakartaSans-Bold',
-    color: '#000000',
-    marginTop: 10,
-    textAlign: 'center',
   },
   button: {
     position: 'absolute',

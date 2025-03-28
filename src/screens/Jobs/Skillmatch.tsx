@@ -32,9 +32,10 @@ const SkillMatchProbability: React.FC<SkillMatchProbabilityProps> = ({
 
       <View style={styles.skillsContainer}>
         {perfectMatchSkills.map((skill, index) => (
-          <Text key={`perfect-${index}`} style={[styles.skillTag, styles.matchedSkills]}>
-            {skill.charAt(0).toUpperCase() + skill.slice(1).toLowerCase()}
-          </Text>
+          <View key={`perfect-${index}`} style={[styles.skillTag, styles.matchedSkills]}>
+            <Text style={styles.matchedSkills}>{skill.charAt(0).toUpperCase() + skill.slice(1).toLowerCase()}</Text>
+          </View>
+          
         ))}
         {unmatchedSkills.map((skill, index) => (
           <View key={`unmatched-${index}`} style={[styles.unmatchedSkillContainer, { flexDirection: 'row', alignItems: 'center' }]}>

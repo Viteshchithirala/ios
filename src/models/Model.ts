@@ -153,4 +153,17 @@ export type RootStackParamList1 = {
         Drives: undefined;
         'My Resume': undefined;
       };
+      // Define the type for the test data
+export interface TestData {
+  testName: string;
+  duration: string;
+  numberOfQuestions: number;
+  topicsCovered: string[];
+  questions?: {
+    id: number;
+    question: string;
+    options: string[];
+    answer: string;
+  }[];
+}
      
