@@ -1,194 +1,77 @@
-import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  ActivityIndicator,
-  Image,
-  TouchableOpacity,
-} from "react-native";
-import { useAppliedJobsViewModel } from "../../viewmodel/jobs/AppliedJob";
-import { JobData } from "@models/Model";
-import { useAuth } from "../../context/Authcontext";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@models/Model";
-import { fetchCompanyLogo } from "../../services/Jobs/AppliedJob"; // Import the service to fetch the logo
-import { Buffer } from "buffer";
+import React from 'react';
+import {StyleSheet, Text, View, FlatList, ActivityIndicator, TouchableOpacity} from 'react-native';
+import {useAppliedJobsViewModel} from '@viewmodel/jobs/AppliedJob';
+import {useAuth} from '@context/Authcontext';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList, JobData} from '@models/Model';
+import JobCard from './Jobcard';
+import {useLogos} from '../../hooks/useLogos';
+import {DefaultLogoUrl} from '@components/constant';
+
 const AppliedJobs = () => {
-  const { userId, userToken } = useAuth();
-  const { appliedJobs, loading, error } = useAppliedJobsViewModel(
-    userId,
-    userToken
-  );
-  const navigation =
-    useNavigation<
-      NativeStackNavigationProp<RootStackParamList, "AppliedJobs">
-    >();
- 
-  const [logos, setLogos] = useState<{ [key: string]: string | null }>({});
-  const [logosLoading, setLogosLoading] = useState(true);
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
- 
-  const formatDate = (dateArray: [number, number, number]): string => {
-    const [year, month, day] = dateArray;
-    return `${monthNames[month - 1]} ${day}, ${year}`;
-  };
- 
-  // Fetch company logos for all jobs
-  useEffect(() => {
-    const fetchLogos = async () => {
-      if (appliedJobs.length > 0) {
-        const logoPromises = appliedJobs.map(async (job) => {
-          if (job.recruiterId) {
-            try {
-              const logo = await fetchCompanyLogo(job.recruiterId, userToken);
-              return { [job.id]: logo };
-            } catch (error) {
-              console.error(`Error fetching logo for recruiterId ${job.recruiterId}:`, error);
-              return { [job.id]: null }; // Set null if logo fetch fails
-            }
-          }
-          return { [job.id]: null }; // Handle cases where recruiterId is missing
-        });
- 
-        // Resolve all promises in parallel
-        const logoDataArray = await Promise.all(logoPromises);
-        const logoData = logoDataArray.reduce((acc, logo) => ({ ...acc, ...logo }), {});
-        setLogos(logoData);
-      }
-      setLogosLoading(false); // Mark logo fetching as completed
-    };
- 
-    if (!loading) {
-      fetchLogos(); // Trigger logo fetching after jobs are loaded
-    }
-  }, [appliedJobs, userToken, loading]);
- 
- 
-  // Renders each job item
-  const renderJobItem = ({ item }: { item: JobData }) => (
-    <TouchableOpacity
-      style={styles.jobCard}
-      onPress={() => navigation.navigate("JobDetailsScreen", { job: item })}
-    >
-      <View style={styles.row}>
-        <Image
-          source={
-            logos[item.id] === 'data:image/jpeg;base64,SW50ZXJuYWwgU2VydmVyIEVycm9y' // Check for the specific invalid Base64 string
-              ? require('../../assests/Images/company.png') // Display the default placeholder
-              : { uri: logos[item.id] } // Display the dynamically fetched logo
-          }
-          style={styles.companyLogo}
-        />
-        <View style={styles.jobDetails}>
-          <Text style={styles.jobTitle} numberOfLines={1} ellipsizeMode="tail">
-            {item.jobTitle}
-          </Text>
-          <Text style={styles.companyName}>{item.companyname}</Text>
-        </View>
-      </View>
- 
-      <View style={[styles.tag, styles.locationContainer]}>
-        <Image
-          source={require("../../assests/Images/rat/loc.png")}
-          style={styles.locationIcon}
-        />
-        <Text style={styles.locationText}>{item.location}</Text>
-      </View>
- 
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "flex-start",
-          flexWrap: "nowrap",
-          alignItems: "center",
-        }}
-      >
-        <View style={{ flexDirection: "row", alignItems: "center", marginRight: 10 }}>
-          <Image
-            source={require("../../assests/Images/rat/exp.png")}
-            style={styles.brieficon}
-          />
-          <Text style={styles.ovalText}>
-            Exp: {item.minimumExperience} - {item.maximumExperience} years
-          </Text>
-          <Text style={{ color: "#E2E2E2", fontFamily: "PlusJakartaSans-Bold" }}>   |</Text>
-        </View>
- 
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginRight: 10,
-            marginTop: 1,
-          }}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text style={{ fontSize: 13 }}>₹ </Text>
-            <Text style={styles.ovalText}>
-              {item.minSalary.toFixed(2)} - {item.maxSalary.toFixed(2)} LPA{" "}
-            </Text>
-            <Text style={{ color: "#E2E2E2", fontFamily: "PlusJakartaSans-Bold" }}>   |</Text>
-          </View>
-        </View>
- 
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={styles.ovalText}>{item.employeeType}</Text>
-        </View>
-      </View>
-      <View>
-        <Text style={styles.postedOn}>Posted on {formatDate(item.creationDate)}</Text>
-      </View>
+  const {userId, userToken} = useAuth();
+  const {appliedJobs, loading, error} = useAppliedJobsViewModel(userId, userToken);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'AppliedJobs'>>();
+  const {logos, loading: logosLoading}: {logos: {[key: number]: string}; loading: boolean} =
+    useLogos(appliedJobs, userToken ?? '');
+
+  const renderJobItem = ({item}: {item: JobData}) => (
+    <TouchableOpacity onPress={() => navigation.navigate('JobDetailsScreen', {job: item})}>
+      <JobCard
+        jobTitle={item.jobTitle}
+        companyName={item.companyname}
+        location={item.location}
+        minExperience={item.minimumExperience}
+        maxExperience={item.maximumExperience}
+        minSalary={item.minSalary}
+        maxSalary={item.maxSalary}
+        employeeType={item.employeeType}
+        creationDate={item.creationDate}
+        logoUrl={
+          logos[item.id] === DefaultLogoUrl
+            ? undefined // Use fallback for invalid Base64
+            : logos[item.id] ?? undefined
+        }
+        truncateTitle={true}
+      />
     </TouchableOpacity>
   );
- 
+
   return (
     <View style={styles.container}>
-      {/* Show loader until both jobs and logos are loaded */}
-      {(loading || logosLoading) && <ActivityIndicator size="large" color="#FF8C00" />}
- 
-      {/* Show error if any */}
+      {/* Show loader until data is fully loaded */}
+      {(loading || logosLoading) && (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color="#FF8C00" />
+        </View>
+      )}
+
       {error && <Text style={styles.placeholderText}>{error}</Text>}
- 
-      {/* Render jobs only when loading is complete */}
+
+      {/* Render jobs if loading is complete and no error */}
       {!loading && !logosLoading && (
         <FlatList
           data={appliedJobs}
           renderItem={renderJobItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={item => item.id.toString()}
           onEndReachedThreshold={0.5}
         />
       )}
- 
+
+      {/* Handle empty list */}
       {!loading && !logosLoading && appliedJobs.length === 0 && (
         <Text style={styles.placeholderText}>No applied jobs available!</Text>
       )}
     </View>
   );
 };
- 
- 
- 
 const styles = StyleSheet.create({
   container: {
+    flex:1,
     backgroundColor: '#f6f6f6',
     top: 0,
-    marginBottom: '25%',
+    
   },
   oval: {
     flexDirection: 'row',

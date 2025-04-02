@@ -280,7 +280,7 @@ const Dummystep2: React.FC = ({ route, navigation }: any) => {
           >
             <Image
               style={styles.logo}
-              source={require('../../assests/LandingPage/logo.png')}
+              source={{ uri: "https://bitlabs-app.s3.ap-south-1.amazonaws.com/bitlabs-skill-images/logo.png" }}
             />
 
             <View style={styles.container}>

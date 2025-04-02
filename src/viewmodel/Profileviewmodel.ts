@@ -371,8 +371,6 @@ export const useProfileViewModel = (userToken: string | null, userId: number | n
     setIsLoading(true);
     try {
       const data = await ProfileService.fetchProfile(userToken, userId);
-      console.log(data.applicant.applicantSkillBadges);
-
       // Populate personal details from the profile data
       if (data?.basicDetails) {
 

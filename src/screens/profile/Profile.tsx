@@ -11,7 +11,6 @@ import {
     Modal,
     TextInput,
     ActivityIndicator,
-    Dimensions,
     SafeAreaView
 
 } from 'react-native';
@@ -32,15 +31,10 @@ import GradientButton from '@components/styles/GradientButton';
 import * as Progress from 'react-native-progress';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { usePdf } from '../../context/ResumeContext';
-import Pdf from 'react-native-pdf';
 type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'Profile'>
 function ProfileComponent() {
-
-
     const nav = useNavigation<any>();
     const { pdfUri } = usePdf()
-
-
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
     const route = useRoute<ProfileScreenRouteProp>()
     const { userId, userToken } = useAuth();
@@ -71,8 +65,6 @@ function ProfileComponent() {
         isCameraOptionsVisible, setCameraOptionsVisible,
         resumeFile, setResumeFile, showBorder, bgcolor, verified, setShowBorder, isUploadComplete, setIsUploadComplete, hasResume,
         isResumeRemoved, photo
-
-
     } = useProfileViewModel(userToken, userId);
     const [resumedisplay, setresumedisplay] = useState(false)
     const { applicant, basicDetails, skillsRequired = [], qualification, specialization, preferredJobLocations, experience, applicantSkillBadges = [] } = profileData || [];
@@ -85,14 +77,9 @@ function ProfileComponent() {
         });
         return unsubscribe;
     }, [navigation]);
-
-
     useEffect(() => {
         if (route.params?.retake) {
             handleCamera()
-            // navigation.setOptions({
-            //     headerShown: false // Hide the header button to prevent re-navigation
-            // });
             navigation.setParams({ retake: false });
         }
     }, [route.params]);
@@ -216,9 +203,9 @@ function ProfileComponent() {
 
 
                                         {skillsRequired.length > 0 && skillsRequired.map((skill: { id: number; skillName: string }, index: number) => (
-                                            <Text key={index} style={styles.skillcolor}>
-                                                {skill.skillName}
-                                            </Text>
+                                            <View key={index} style={styles.skillBadge}>
+                                                <Text style={styles.skillBadgeText}>{skill.skillName}</Text>
+                                            </View>
                                         ))}
 
                                         {skillsRequired.length === 0 && applicantSkillBadges.length === 0 && (
@@ -400,9 +387,9 @@ function ProfileComponent() {
                                                 <TouchableOpacity onPress={handleUploadResume}>
                                                     <View style={{ alignItems: 'center' }}>
                                                         {/* <Image
-                                            source={require('../../../src/assests/Images/file1.png')}
-                                            style={{ position: 'absolute', top: 30 }}
-                                        /> */}
+                                        source={require('../../../src/assests/Images/file1.png')}
+                                        style={{ position: 'absolute', top: 30 }}
+                                    /> */}
                                                         <Fileupload style={{ position: 'absolute', top: 30 }} />
                                                     </View>
 
@@ -473,20 +460,20 @@ function ProfileComponent() {
                                                 )}
                                             </View>
                                             {/* <View>
-                                                <View style={[styles.orContainer, { marginTop: 20, marginVertical: 20 }]}>
-                                                    <View style={styles.line}></View>
-                                                    <Text style={{ marginTop: -12, fontWeight: '600', fontFamily: 'PlusJakartaSans-Bold' }}> Or </Text>
-                                                    <View style={[styles.line, { marginLeft: 3 }]}></View>
-                                                </View>
+                                            <View style={[styles.orContainer, { marginTop: 20, marginVertical: 20 }]}>
+                                                <View style={styles.line}></View>
+                                                <Text style={{ marginTop: -12, fontWeight: '600', fontFamily: 'PlusJakartaSans-Bold' }}> Or </Text>
+                                                <View style={[styles.line, { marginLeft: 3 }]}></View>
                                             </View>
-                                            <View>
-                                                <TouchableOpacity
-                                                    style={styles.uploadButton}
-                                                    onPress={() => navigation.navigate('ResumeBuilder')}
-                                                >
-                                                    <Text style={{ color: '#FFFFFF', fontFamily: 'PlusJakartaSans-Bold' }}>Create Resume</Text>
-                                                </TouchableOpacity>
-                                            </View> */}
+                                        </View>
+                                        <View>
+                                            <TouchableOpacity
+                                                style={styles.uploadButton}
+                                                onPress={() => navigation.navigate('ResumeBuilder')}
+                                            >
+                                                <Text style={{ color: '#FFFFFF', fontFamily: 'PlusJakartaSans-Bold' }}>Create Resume</Text>
+                                            </TouchableOpacity>
+                                        </View> */}
                                             <TouchableOpacity
                                                 style={[styles.buttonContent, { alignItems: 'flex-end', marginBottom: 10 }]}
                                                 onPress={handleSaveResume}
@@ -514,11 +501,7 @@ function ProfileComponent() {
             </View>
         </SafeAreaView>
     )
-
 }
-
-
-
 const styles = StyleSheet.create({
     line: {
         width: '20%',
@@ -529,10 +512,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     uploadContainer: {
-        //flexDirection: "row",
-        //justifyContent: "space-between",
         padding: 5,
-
     },
     fileNameText: {
         fontSize: 16,
@@ -564,9 +544,8 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop:10 //remove later
+        marginTop: 10 //remove later
     },
-
     uploadButton: {
         width: '100%',
         backgroundColor: '#4B4A4A',
@@ -575,39 +554,31 @@ const styles = StyleSheet.create({
         height: 30,
         borderRadius: 5,
         marginBottom: 55
-
     },
     closeIcon: {
         position: 'absolute',
         left: 220,
-
     },
     pdf: {
-
         flex: 1, width: '100%', height: '100%'
-
-
-
     },
     skillBadge: {
-        height: 30,
+        height: 35,
         flexDirection: 'row',
         alignItems: 'center', // Align children vertically
         justifyContent: 'center', // Center children horizontally
         paddingHorizontal: 8, // Consistent padding inside badges
-        backgroundColor: '#334584', // Default background color
+        backgroundColor: '#498C07', // Default background color
         borderRadius: 15,
         marginRight: 8,
         marginBottom: 5,
         marginVertical: 5, // Space between rows
-
+        overflow: 'hidden',
     },
-
     skillBadgeText: {
         color: 'white',
         fontSize: 14,
         fontFamily: 'PlusJakartaSans-Medium',
-
     },
     button: {
         marginTop: 4,
@@ -616,7 +587,6 @@ const styles = StyleSheet.create({
         height: 30,
         width: '100%',
         borderRadius: 5
-
     },
     input: {
         height: 40,
@@ -629,8 +599,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#E5E5E5',
         color: '#0D0D0D',
         fontFamily: 'PlusJakartaSans-Medium'
-
-
     },
     skillContainer: {
         alignItems: 'center',  // Centers items vertically
@@ -648,19 +616,14 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         margin: 5,
         color: '#fff',
-
         paddingHorizontal: 8,
         fontFamily: 'PlusJakartaSans-Medium',
-
-
-
     },
     card: {
         margin: 10,
         padding: 20,
         backgroundColor: '#fff',
         borderRadius: 10,
-
     },
     container: {
         alignItems: 'center',
@@ -669,17 +632,13 @@ const styles = StyleSheet.create({
         position: 'relative',
         alignItems: 'center', // Center the image horizontally
     },
-
     pencil: {
         marginLeft: 'auto'
     },
     name: {
-
         fontSize: 24,
         color: '#424242',
         fontFamily: 'PlusJakartaSans-Bold',
-
-
     },
     image: {
         width: 150,
@@ -704,7 +663,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginVertical: 4,
-
     },
     text: {
         marginLeft: 10,
@@ -717,8 +675,6 @@ const styles = StyleSheet.create({
         margin: 10,
         borderRadius: 10,
         padding: 20
-
-
     },
     cap: {
         margin: 2,
@@ -740,18 +696,14 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-
     },
     modalCard: {
         width: 300,
-        backgroundColor:
-            'white',
+        backgroundColor: 'white',
         borderRadius: 10,
         padding: 20,
     },
-
     resumeModal: {
-        // flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -779,33 +731,19 @@ const styles = StyleSheet.create({
         marginTop: 16
     },
     touchableTextContainer: {
-        marginTop: 10, // Add margin to separate the touchable text from the row above
-        // alignItems: 'center', // Center align the touchable text
+        marginTop: 20, // Add margin to separate the touchable text from the row above
         width: '100%',
     },
-
-
-
-    // Style for the static Resume Text (left side)
-
-    // Style for the Edit Logo (right side)
-
-
     editLogo: {
         width: 18,
         height: 18,
     },
-
-
-    // Modal View for the Resume Edit
     modalView1: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)', // Background opacity for modal
     },
-
-    // Modal Card Style
     modalCard1: {
         width: 350,
         backgroundColor: 'white',
@@ -839,24 +777,15 @@ const styles = StyleSheet.create({
         // textAlignVertical: 'top', // Makes the text align from top in the input box
         fontFamily: 'PlusJakartaSans-Medium',
     },
-
-
-
-    // Save Button Text
     saveButtonText: {
         color: 'white',
-
-
     },
-
     modalView5: {
         flex: 1,
         justifyContent: 'flex-end', // Align modal at the bottom
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)', // Optional: Background overlay
-
     },
-
     modalCard5: {
         width: '95%', // Adjusts modal width
         marginHorizontal: '5%', // Centers the modal horizontally
@@ -871,7 +800,6 @@ const styles = StyleSheet.create({
         elevation: 5,
         marginBottom: 10
     },
-
     modalCard6: {
         width: '95%',
         marginHorizontal: '5%',
@@ -882,7 +810,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         paddingLeft: 5
     },
-
     customButton: {
         width: '100%', // Full-width button
         backgroundColor: 'white',
@@ -900,17 +827,11 @@ const styles = StyleSheet.create({
         borderColor: '#ccc', // Divider color
         justifyContent: 'flex-start', // Align text to the left
     },
-
     buttonText1: {
-
-
-
-
         fontSize: 14,
         color: '#0D0D0D',
         fontFamily: 'PlusJakartaSans-Medium', // Set font to Jakarta Sans
     },
-
     modalButton7: {
         width: '100%', // Full-width cancel button
         fontSize: 18,
@@ -919,20 +840,17 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         // marginTop: 5, // Reduce margin to avoid excessive space before "Cancel"
     },
-
     modalButtonText7: {
         color: '#E35D6A', // Text color for the Cancel button
         fontWeight: 400,
         fontSize: 14,
         fontFamily: 'PlusJakartaSans-Medium', // Set font to Jakarta Sans
     },
-
     separator: {
         height: 1,
         width: '100%',
         backgroundColor: '#ccc', // Add a grey line as separator
         marginVertical: 15,
-
     },
     errorContainer: {
         flex: 1,
@@ -943,13 +861,11 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 12,
         fontFamily: 'PlusJakartaSans-Medium'
-    }
-    ,
+    },
     retryText: {
         color: '#F97316',
         fontSize: 16,
         marginTop: 10
     },
-
 });
 export default ProfileComponent;

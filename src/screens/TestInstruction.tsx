@@ -124,7 +124,6 @@ const Test = ({ route, navigation }: any) => {
 
     fetchApiData(identifier).then((data) => {
       setTestData(data);
-      console.log("data set : ", data)
       setTestDataFetched(true)
       setLoading(false);
     }).catch((error) => {

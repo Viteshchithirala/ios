@@ -373,27 +373,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 20
   },
-  stepCircle: {
-    width: 20,
-    height: 20,
-    borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f2f2f2',
-  },
-  stepText: {
-    color: '#6D6969',
-    fontWeight: '500',
-    fontSize: 12,
-    fontFamily: 'PlusJakartaSans-Medium',
-  },
-  stepLine: {
-    flex: 1,
-    width: 100,
-    height: 1,
-    backgroundColor: '#BFBFBF',
-
-  },
   gradientBackground: {
     marginTop: 20,
     borderRadius: 10,
@@ -419,25 +398,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  button: {
-    position: 'absolute',
-    bottom: 0,
-    width: 190,
-    height: 45,
-    backgroundColor: '#374A70',
-    alignItems: 'center',
-    borderBottomStartRadius: 10,
-    borderBottomEndRadius: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '600',
-    marginLeft: 10,
-    fontFamily: 'PlusJakartaSans-Medium',
-  },
+  
   gradientBackground1: {
     width: '95%',
     alignSelf: 'center',

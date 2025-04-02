@@ -1,18 +1,20 @@
-import apiClient from '../login/ApiClient';
+import apiClient from "../login/ApiClient";
 
-
-const getAuthHeader = (userToken: string|null) => {
+const getAuthHeader = (userToken: string | null) => {
   return {
     Authorization: `Bearer ${userToken}`,
   };
 };
 
-export const saveJob = async (jobId: number, applicantId: number |null,userToken: string |null) => {
+export const saveJob = async (
+  jobId: number,
+  applicantId: number | null,
+  userToken: string | null,
+) => {
   try {
     const response = await apiClient.post(
       `/savedjob/applicants/savejob/${applicantId}/${jobId}`,
       {},
-      {  headers: { Authorization: `Bearer ${userToken}` }, }
     );
     return response.data;
   } catch (error: any) {
@@ -21,12 +23,15 @@ export const saveJob = async (jobId: number, applicantId: number |null,userToken
   }
 };
 
-export const applyJob = async (applicantId: number|null, jobId: number,userToken: string |null) => {
+export const applyJob = async (
+  applicantId: number | null,
+  jobId: number,
+  userToken: string | null,
+) => {
   try {
     const response = await apiClient.post(
       `/applyjob/applicants/applyjob/${applicantId}/${jobId}`,
       {},
-      { headers: getAuthHeader(userToken) }
     );
     return response.data;
   } catch (error: any) {
@@ -35,11 +40,14 @@ export const applyJob = async (applicantId: number|null, jobId: number,userToken
   }
 };
 
-export const removeSavedJob = async (jobId: number, applicantId: number |null,userToken: string |null) => {
+export const removeSavedJob = async (
+  jobId: number,
+  applicantId: number | null,
+  userToken: string | null,
+) => {
   try {
     const response = await apiClient.delete(
       `/savedjob/applicants/deletejob/${applicantId}/${jobId}`,
-      {  headers: { Authorization: `Bearer ${userToken}` } }
     );
     return response.data;
   } catch (error: any) {

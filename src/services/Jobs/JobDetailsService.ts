@@ -1,20 +1,14 @@
-import axios from 'axios';
-import {API_BASE_URL} from '@env';
+import apiClient from "@services/login/ApiClient";
 
 export const fetchJobStatus = async (applyJobId: number, userToken: string) => {
   try {
-    const response = await axios.get(
-      `${API_BASE_URL}/applyjob/recruiters/applyjob-status-history/${applyJobId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      }
+    const response = await apiClient.get(
+      `/applyjob/recruiters/applyjob-status-history/${applyJobId}`,
     );
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching job status:', error);
+    console.error("Error fetching job status:", error);
     throw error;
   }
 };

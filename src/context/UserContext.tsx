@@ -1,14 +1,14 @@
 // UserContext.tsx
 
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { useAuth } from './Authcontext';
-import ProfileService from '../services/profile/ProfileService';
-import { fetchJobCounts } from '../services/Home/apiService';
-import { JobCounts } from '@models/Model';
+import React, { createContext, useState, useEffect, ReactNode } from "react";
+import { useAuth } from "./Authcontext";
+import ProfileService from "../services/profile/ProfileService";
+import { fetchJobCounts } from "../services/Home/apiService";
+import { JobCounts } from "@models/Model";
 
 interface UserContextProps {
   verifiedStatus: boolean;
-  isJobsLoaded :boolean;
+  isJobsLoaded: boolean;
   setIsJobsLoaded: (value: React.SetStateAction<boolean>) => void;
   personalName: string;
   refreshVerifiedStatus: () => Promise<void>;
@@ -17,22 +17,27 @@ interface UserContextProps {
   refreshJobCounts: () => Promise<void>;
   refreshPersonalName: () => Promise<void>;
   jobCounts: JobCounts | null;
-  reset :()=>Promise<void>;
+  reset: () => Promise<void>;
+  lastViewedJobIndex :number|null;
+  setLastViewedJobIndex :(value : React.SetStateAction<number | null>) => void
+
+
 }
 
 const UserContext = createContext<UserContextProps>({
-
   verifiedStatus: false,
-  personalName: '',
+  personalName: "",
   jobCounts: null,
-  isJobsLoaded:false,
-  setIsJobsLoaded:()=>{},
-  refreshVerifiedStatus: async () => { },
-  refreshJobCounts: async () => { },
-  setPersonalName: () => { },
+  isJobsLoaded: false,
+  setIsJobsLoaded: () => {},
+  refreshVerifiedStatus: async () => {},
+  refreshJobCounts: async () => {},
+  setPersonalName: () => {},
   isLoading: true,
-  reset:async ()=>{ },
-  refreshPersonalName: async () => { },
+  reset: async () => {},
+  refreshPersonalName: async () => {},
+  lastViewedJobIndex: null,
+  setLastViewedJobIndex:()=>{ }
 });
 
 interface UserProviderProps {
@@ -40,24 +45,24 @@ interface UserProviderProps {
 }
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  const [isJobsLoaded,setIsJobsLoaded] = useState(false)
+  const [isJobsLoaded, setIsJobsLoaded] = useState(false);
+  const [lastViewedJobIndex,setLastViewedJobIndex] = useState<number|null>(null);
   const { userId, userToken } = useAuth();
   const [jobCounts, setJobCounts] = useState<JobCounts | null>(null);
   const [verifiedStatus, setVerifiedStatus] = useState(false);
-  const [personalName, setPersonalName] = useState('');
-  const [isLoading, setLoading] = useState(true);
+  const [personalName, setPersonalName] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
 
     if (!userId || !userToken) {
-      
-      console.error('No userId or userToken available in UserProvider');
+      console.error("No userId or userToken available in UserProvider");
       return;
     }
 
     const fetchUserData = async () => {
-      setLoading(true); 
+      setIsLoading(true);
       try {
         const [status, user, jobs] = await Promise.all([
           ProfileService.checkVerified(userToken, userId),
@@ -66,42 +71,38 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         ]);
 
         if (isMounted) {
-          if (typeof status === 'boolean') {
+          if (typeof status === "boolean") {
             setVerifiedStatus(status);
-            console.log('Verified Status:', status);
           } else {
-            console.error('Invalid verified status:', status);
+            console.error("Invalid verified status:", status);
           }
-
-          console.log('Fetched user data:', user);
 
           const name = user?.basicDetails?.firstName; // Note the capital "N"
 
           if (name) {
             setPersonalName(name);
-            console.log("User's Name:", name);
           } else {
-            console.error('User basic details or firstName is missing');
+            console.error("User basic details or firstName is missing");
           }
 
           // Set job counts
           if (jobs) {
             setJobCounts(jobs);
-            console.log('Job Counts:', jobs);
           } else {
-            console.error('Failed to fetch job counts');
+            console.error("Failed to fetch job counts");
           }
-          setLoading(false);
+          setIsLoading(false);
         }
       } catch (error) {
         if (isMounted) {
-          setLoading(false);
+          setIsLoading(false);
         }
-        console.error('Failed to fetch user data:', error);
+        console.error("Failed to fetch user data:", error);
       }
     };
-
-    fetchUserData();
+    if (isMounted) {
+      fetchUserData();
+    }
 
     return () => {
       isMounted = false;
@@ -113,14 +114,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const refreshVerifiedStatus = async () => {
     try {
       const status = await ProfileService.checkVerified(userToken, userId);
-      if (typeof status === 'boolean') {
+      if (typeof status === "boolean") {
         setVerifiedStatus(status);
-        console.log('Verified Status Refreshed:', status);
       } else {
-        console.error('Invalid verified status:', status);
+        console.error("Invalid verified status:", status);
       }
     } catch (error) {
-      console.error('Failed to refresh verified status:', error);
+      console.error("Failed to refresh verified status:", error);
     }
   };
   const refreshJobCounts = async () => {
@@ -128,53 +128,52 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       const jobs = await fetchJobCounts(userId, userToken);
       if (jobs) {
         setJobCounts(jobs);
-        console.log('Job Counts Refreshed:', jobs);
       } else {
-        console.error('Failed to fetch job counts');
+        console.error("Failed to fetch job counts");
       }
     } catch (error) {
-      console.error('Failed to refresh job counts:', error);
+      console.error("Failed to refresh job counts:", error);
     }
   };
-  const refreshPersonalName = async()  =>{
-    try{
-    const user = await ProfileService.fetchProfile(userToken,userId);
-    const name = user ?.basicDetails ?.firstName
- 
-    if(name){
-      setPersonalName(name)
-    }else{
-      console.error('Error fetching name in usercontext ')
+
+  const refreshPersonalName = async () => {
+    try {
+      const user = await ProfileService.fetchProfile(userToken, userId);
+      const name = user?.basicDetails?.firstName;
+
+      if (name) {
+        setPersonalName(name);
+      } else {
+        console.error("Error fetching name in usercontext ");
+      }
+    } catch (error) {
+      console.error("Error fetching name :", error);
     }
-    }catch(error){
-      console.error('Error fetching name :', error)
-    }
- 
- 
-  }
-  
- // Reset the information before logging out 
- const reset = async()=>{
-  setPersonalName('');
-  setVerifiedStatus(false);
-  setJobCounts(null);
-  setIsJobsLoaded(false);
-  
- }
+  };
+
+  // Reset the information before logging out
+  const reset = async () => {
+    setPersonalName("");
+    setVerifiedStatus(false);
+    setJobCounts(null);
+    setIsJobsLoaded(false);
+  };
   return (
     <UserContext.Provider
       value={{
         verifiedStatus,
         personalName,
         jobCounts,
-        setPersonalName, // Expose setPersonalName to update name after API call
+        setPersonalName, 
         refreshVerifiedStatus,
         refreshJobCounts,
         isLoading,
         reset,
         isJobsLoaded,
         setIsJobsLoaded,
-        refreshPersonalName
+        refreshPersonalName,
+        lastViewedJobIndex,
+        setLastViewedJobIndex,
       }}
     >
       {children}
