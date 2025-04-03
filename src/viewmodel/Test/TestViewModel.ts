@@ -4,10 +4,10 @@ import { submitTestResult } from "@services/Test/testService"; // Import the ser
 import { TestDetails } from "@models/Model"; // Assuming you have a model for test details
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@models/model"; // Define your stack param list
-import { updateLead } from "@services/ZohoCrm";
+import { updateLead,searchLead } from "@services/ZohoCrm";
 import { useAuth } from "@context/Authcontext";
 // Type the navigation object with your stack's params
-
+ 
 export const useTestViewModel = (
   userId: number | any,
   jwtToken: string | null,
@@ -17,7 +17,7 @@ export const useTestViewModel = (
   const [isTestComplete, setIsTestComplete] = useState(false);
   const [showEarlySubmissionModal, setShowEarlySubmissionModal] = useState(false);
   const [showTimeUpModal, setShowTimeUpModal] = useState(false);
-  const { leadId } = useAuth();
+  const { leadId , setLeadId,userEmail} = useAuth();
   const submitTest = async (finalScore: number, isEarlySubmission: boolean) => {
     const testStatus = isEarlySubmission
       ? "F" // Early submission fails by default
@@ -31,10 +31,10 @@ export const useTestViewModel = (
       testDateTime: new Date().toISOString(),
       applicant: { id: userId },
     };
-
+ 
     try {
       const response = await submitTestResult(userId, testDetails, jwtToken);
-
+ 
       if (response.status) {
         // Handle success
         setIsTestComplete(true);
@@ -63,14 +63,26 @@ export const useTestViewModel = (
         }
         // Attempt to update lead in Zoho CRM
         try {
-          console.log("Lead Data:", leadData);
-          console.log("Lead Id:", leadId);
-          const res = await updateLead(leadId, leadData);
-  
+          console.log("Searching for lead using email:", userEmail);
+          const fetchedLeadId = await searchLead(userEmail);
+ 
+          if (fetchedLeadId) {
+            console.log("Lead found with ID:", fetchedLeadId);
+            setLeadId(fetchedLeadId); // Update the leadId state
+ 
+            // Step 2: Update the Lead in Zoho CRM
+            console.log("Updating Lead with ID:", fetchedLeadId);
+            const res = await updateLead(fetchedLeadId, leadData);
+            if (res?.status) {
+              console.log("Lead update status:", res?.status);
+            }
+          } else {
+            console.log("No lead found for email:", userEmail);
+          }
         } catch (error) {
           console.error("Error updating lead:", error);
         }
-
+ 
         // Navigation logic
         if (finalScore >= 70) {
           navigation.navigate("passContent", { finalScore, testName });
@@ -84,7 +96,7 @@ export const useTestViewModel = (
       console.error("Error during test submission:", error);
     }
   };
-
+ 
   return {
     isTestComplete,
     showEarlySubmissionModal,

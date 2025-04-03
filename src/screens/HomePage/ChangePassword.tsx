@@ -78,8 +78,8 @@ const ChangePasswordScreen = () => {
   );
 
   return (
-    <SafeAreaView style={{flex:1}}>
     <TouchableWithoutFeedback onPress={handleKeyboardDismiss}>
+      <SafeAreaView style={styles.container}>
       <View style={styles.container}>
         <Navbar title="Change Password" onBackPress={() => navigation.goBack()} />
  
@@ -142,8 +142,9 @@ const ChangePasswordScreen = () => {
           onPressBack={handleBackButton} // Since the back button is needed here
         />
       </View>
+      </SafeAreaView>
     </TouchableWithoutFeedback>
-    </SafeAreaView>
+    
   );
 };
  
