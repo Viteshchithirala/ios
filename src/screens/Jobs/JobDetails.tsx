@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import LinearGradient from "react-native-linear-gradient"; // Ensure this is imported
 import { RouteProp } from "@react-navigation/native";
@@ -33,7 +33,10 @@ const JobDetails: React.FC<JobDetailsProps> = ({ route, navigation }) => {
     handleSaveJob,
     handleApplyJob,
   } = useJobDetailsViewModels(job.id);
-
+  useEffect(() => {
+    // Log the job description to the console
+    console.log("Job Description: in job detaiuls contebnrfyht", route.params);
+  }, [job.description]);
   return (
     <View style={styles.container}>
       <JobDetailsContent
@@ -44,6 +47,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({ route, navigation }) => {
         unmatchedSkills={unmatchedSkills}
         suggestedCourses={suggestedCourses}
         companyLogo={companyLogo ?? undefined}
+       
       />
 
       <View style={styles.footerContainer}>

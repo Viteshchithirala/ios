@@ -30,8 +30,8 @@ const RecommendedJobs = () => {
   const [activeTab, setActiveTab] = useState<"recommended" | "applied" | "saved">("recommended");
   const navigation = useNavigation<RecommendedJobsNavigationProp>();
   const [visibleJobsCount, setVisibleJobsCount] = useState(10); // Number of jobs to display initially
-  const [pendingScrollIndex , setPendingScrollIndex] = useState<number | null >(null);
-  const { isJobsLoaded, setIsJobsLoaded ,lastViewedJobIndex,setLastViewedJobIndex} = useContext(UserContext);
+  const [pendingScrollIndex, setPendingScrollIndex] = useState<number | null>(null);
+  const { isJobsLoaded, setIsJobsLoaded, lastViewedJobIndex, setLastViewedJobIndex } = useContext(UserContext);
   const { userToken } = useAuth();
   const flastListRef = useRef<FlatList>(null);
   const { logos, loading: logosLoading }: { logos: { [key: number]: string }; loading: boolean } =
@@ -44,12 +44,12 @@ const RecommendedJobs = () => {
 
   useEffect(() => {
     if (!isJobsLoaded) {
-      reloadJobs().then(()=>{
-        if(lastViewedJobIndex!==null){
-        const  safeIndex =  Math.min(lastViewedJobIndex+2 , visibleJobs.length-1)
-        setVisibleJobsCount(lastViewedJobIndex+2)
-        setPendingScrollIndex(safeIndex)
-        setLastViewedJobIndex(null);
+      reloadJobs().then(() => {
+        if (lastViewedJobIndex !== null) {
+          const safeIndex = Math.min(lastViewedJobIndex + 2, visibleJobs.length - 1)
+          setVisibleJobsCount(lastViewedJobIndex + 2)
+          setPendingScrollIndex(safeIndex)
+          setLastViewedJobIndex(null);
 
         }
       }) // Reload jobs only when `isJobsLoaded` is false
@@ -70,9 +70,14 @@ const RecommendedJobs = () => {
   };
 
   // Render job cards
-  const renderJobs = ({ item ,index }: { item: JobData ;index: number}) => {
+  const renderJobs = ({ item, index }: { item: JobData; index: number }) => {
     return (
-      <TouchableOpacity onPress={() => navigation.navigate("JobDetails", { job: item , JobIndex: index })}>
+      <TouchableOpacity
+        onPress={() => {
+          console.log("Navigating to JobDetails with data:", { job: item, JobIndex: index });
+          navigation.navigate("JobDetails", { job: item, JobIndex: index });
+        }}
+      >
         <JobCard
           jobTitle={item.jobTitle}
           companyName={item.companyname}
@@ -111,22 +116,22 @@ const RecommendedJobs = () => {
       case "recommended":
         return (
           <FlatList
-            ref ={flastListRef}
+            ref={flastListRef}
             data={visibleJobs} // Filter and display only visible jobs
             renderItem={renderJobs}
             keyExtractor={item => item.id.toString()}
             getItemLayout={(_, index) => ({ length: 177, offset: 177 * index, index })}
             onContentSizeChange={() => {
               if (pendingScrollIndex !== null) {
-                const indexToScroll = pendingScrollIndex < visibleJobs.length 
-                  ? pendingScrollIndex 
+                const indexToScroll = pendingScrollIndex < visibleJobs.length
+                  ? pendingScrollIndex
                   : visibleJobs.length - 1;
                 flastListRef.current?.scrollToIndex({ index: indexToScroll, animated: false });
                 setPendingScrollIndex(null);
               }
-              
+
             }}
-            
+
             onEndReached={loadMoreJobs} // Load more jobs when the user scrolls to the bottom
             onEndReachedThreshold={0.5} // Trigger when the user is 50% from the bottom
             ListEmptyComponent={
@@ -156,56 +161,56 @@ const RecommendedJobs = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-    <View style={styles.container}>
-      <View style={styles.jobstextcon}>
-        <Text style={styles.Jobstext}>Jobs</Text>
+      <View style={styles.container}>
+        <View style={styles.jobstextcon}>
+          <Text style={styles.Jobstext}>Jobs</Text>
+        </View>
+        <View style={styles.tabs}>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === "recommended" && styles.activeTab]}
+            onPress={() => handleTabPress("recommended")}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                styles.rightAlignedText,
+                activeTab === "recommended" && styles.activeTabText,
+              ]}
+            >
+              Recommended
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === "applied" && styles.activeTab]}
+            onPress={() => handleTabPress("applied")}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                styles.rightAlignedText,
+                activeTab === "applied" && styles.activeTabText,
+              ]}
+            >
+              Applied
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === "saved" && styles.activeTab]}
+            onPress={() => handleTabPress("saved")}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                styles.rightAlignedText,
+                activeTab === "saved" && styles.activeTabText,
+              ]}
+            >
+              Saved
+            </Text>
+          </TouchableOpacity>
+        </View>
+        {renderContent()}
       </View>
-      <View style={styles.tabs}>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === "recommended" && styles.activeTab]}
-          onPress={() => handleTabPress("recommended")}
-        >
-          <Text
-            style={[
-              styles.tabText,
-              styles.rightAlignedText,
-              activeTab === "recommended" && styles.activeTabText,
-            ]}
-          >
-            Recommended
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === "applied" && styles.activeTab]}
-          onPress={() => handleTabPress("applied")}
-        >
-          <Text
-            style={[
-              styles.tabText,
-              styles.rightAlignedText,
-              activeTab === "applied" && styles.activeTabText,
-            ]}
-          >
-            Applied
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === "saved" && styles.activeTab]}
-          onPress={() => handleTabPress("saved")}
-        >
-          <Text
-            style={[
-              styles.tabText,
-              styles.rightAlignedText,
-              activeTab === "saved" && styles.activeTabText,
-            ]}
-          >
-            Saved
-          </Text>
-        </TouchableOpacity>
-      </View>
-      {renderContent()}
-    </View>
     </SafeAreaView>
   );
 };

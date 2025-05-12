@@ -20,7 +20,7 @@ const useJobDetailsViewModel = (jobId: string) => {
     const fetchProfileData = async () => {
       try {
         const jobData = await fetchJobDetails(Number(jobId), userId, userToken);
-
+        console.log("Job Data:", jobData.description);
         setSkillProgressText(jobData.matchStatus);
         setSuggestedCourses(jobData.sugesstedCourses);
 
